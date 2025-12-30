@@ -1,9 +1,13 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from . import models, database, schemas, crud
-from fastapi import HTTPException
+from app.routers import teams,results
+
 
 app = FastAPI()
+
+app.include_router(teams.router)
+app.include_router(results.router)
 
 models.Base.metadata.create_all(bind=database.engine)
 

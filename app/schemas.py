@@ -11,6 +11,13 @@ class TeamBase(BaseModel):
 class TeamCreate(TeamBase):
     pass
 
+class Team(TeamBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
 class TeamResponse(TeamBase):
     id: int
 
@@ -29,6 +36,20 @@ class ResultResponse(ResultCreate):
 
     class Config:
         from_attributes = True
+
+class ResultJoin(BaseModel):
+    team_name: str
+    city: Optional[str]
+    game_name: str
+    place: int
+    points: int
+
+    class Config:
+        from_attributes = True
+
+class ResultUpdate(BaseModel):
+    place: Optional[int] = None
+    points: Optional[int] = None
 
 class GameCreate(BaseModel):
     name: Optional[str] = None

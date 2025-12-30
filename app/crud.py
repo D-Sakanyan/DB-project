@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from . import models, schemas
 
 def create_team(db: Session, team: schemas.TeamCreate):
@@ -36,6 +37,32 @@ def get_results_by_team(db: Session, team_id: int):
 
 def get_results_by_game(db: Session, game_id: int):
     return db.query(models.Result).filter(models.Result.game_id == game_id).all()
+
+
+def get_results_with_join(db: Session):
+    return (
+        db.query(
+            models.Team.name.label("team_name"),
+            models.Team.city.label("city"),
+            models.Game.name.label("game_name"),
+            models.Result.place,
+            models.Result.points
+        )
+        .join(models.Result, models.Team.id == models.Result.team_id)
+        .join(models.Game, models.Game.id == models.Result.game_id)
+        .all()
+    )
+
+def get_results_count_by_team(db: Session):
+    rows = (
+        db.query(
+            models.Result.team_id,
+            func.count(models.Result.id).label("results_count")
+        )
+        .group_by(models.Result.team_id)
+        .all()
+    )
+    return [{"team_id": r.team_id, "results_count": r.results_count} for r in rows]
 
 def create_game(db: Session, game: schemas.GameCreate):
     db_game = models.Game(
