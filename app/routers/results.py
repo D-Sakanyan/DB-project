@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
-from app import models
-from app import crud, schemas
+from app import crud, schemas, models
 from app.database import get_db
 from app.crud import get_results_count_by_team
 from sqlalchemy import desc
@@ -55,3 +54,16 @@ def get_sorted_results(
         query = query.order_by(column)
 
     return query.all()
+
+@router.get("/", response_model=List[schemas.Result])
+def get_results(
+    limit: int = Query(10, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: Session = Depends(get_db)
+):
+    return (
+        db.query(models.Result)
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )

@@ -51,6 +51,12 @@ class ResultUpdate(BaseModel):
     place: Optional[int] = None
     points: Optional[int] = None
 
+class Result(ResultCreate):
+    id: int
+
+    class Config:
+        orm_mode = True
+
 class GameCreate(BaseModel):
     name: Optional[str] = None
     league: Optional[str] = None
